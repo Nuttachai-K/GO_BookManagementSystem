@@ -4,14 +4,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/korn/learning/book_store/pkg/routes"
 )
 
 func main() {
-	r := mux.NewRouter()
-	routes.RegisterBookStoreRoutes(r)
-	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe("localhost:9010", r))
+	router := gin.Default()
+	routes.RegisterBookStoreRoutes(router)
+	http.Handle("/", router)
+	log.Fatal(http.ListenAndServe("localhost:9010", router))
 }

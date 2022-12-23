@@ -3,11 +3,12 @@ package utils
 import (
 	"encoding/json"
 	"io/ioutil"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func ParseBody(r *http.Request, x interface{}) {
-	if body, err := ioutil.ReadAll(r.Body); err == nil {
+func ParseBody(c *gin.Context, x interface{}) {
+	if body, err := ioutil.ReadAll(c.Request.Body); err == nil {
 		if err := json.Unmarshal([]byte(body), x); err != nil {
 			return
 		}
