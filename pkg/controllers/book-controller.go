@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -16,9 +17,6 @@ var NewBook models.Book
 func GetBook(c *gin.Context) {
 	newBooks := models.GetAllBooks()
 	res, _ := json.Marshal(newBooks)
-	/*w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)*/
 	c.JSON(http.StatusOK, res)
 }
 
@@ -29,11 +27,7 @@ func GetBookById(c *gin.Context) {
 		fmt.Println("error while parsing")
 	}
 	bookDetails, _ := models.GetBookById(ID)
-	res, _ := json.Marshal(bookDetails)
-	/*w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)*/
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, bookDetails)
 
 }
 
@@ -41,8 +35,7 @@ func CreateBook(c *gin.Context) {
 	CreateBook := &models.Book{}
 	utils.ParseBody(c, CreateBook)
 	b := CreateBook.CreaterBook()
-	res, _ := json.Marshal(b)
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, b)
 
 }
 
@@ -53,11 +46,7 @@ func DeleteBook(c *gin.Context) {
 		fmt.Println("error while parsing")
 	}
 	book := models.DeleteBook(ID)
-	res, _ := json.Marshal(book)
-	/*w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)*/
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, book)
 }
 
 func UpdateBook(c *gin.Context) {
@@ -78,10 +67,11 @@ func UpdateBook(c *gin.Context) {
 	if updateBook.Publication != "" {
 		bookDetails.Publication = updateBook.Publication
 	}
-	db.Save(&bookDetails)
-	res, _ := json.Marshal(bookDetails)
-	/*w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)*/
-	c.JSON(http.StatusOK, res)
+	if err := db.Save(&bookDetails).Error; err != nil {
+		log.Printf("error updating book: %v", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, bookDetails)
 }

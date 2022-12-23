@@ -10,11 +10,11 @@ var (
 )
 
 func Connect() {
-	d, err := gorm.Open("mysql", "Korn:Nuttachai12/simplerest?charset=utf8&parseTime=True&loc=Local")
+	var err error
+	db, err = gorm.Open("postgres", "user=postgres password=0897797817 host=HOST port=5432 dbname=bookstore sslmode=DISABLE")
 	if err != nil {
-		panic(err)
+		panic("failed to connect to database: " + err.Error())
 	}
-	db = d
 }
 
 func GetDB() *gorm.DB {
