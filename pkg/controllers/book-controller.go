@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,19 +15,19 @@ var NewBook models.Book
 
 func GetBook(c *gin.Context) {
 	newBooks := models.GetAllBooks()
-	res, _ := json.Marshal(newBooks)
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, newBooks)
 }
 
 func GetBookById(c *gin.Context) {
 	bookId := c.Param("bookId")
-	ID, err := strconv.ParseInt(bookId, 0, 0)
+	ID, err := strconv.ParseInt(bookId, 10, 64)
 	if err != nil {
-		fmt.Println("error while parsing")
+		log.Println("error while parsing book ID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
 	}
 	bookDetails, _ := models.GetBookById(ID)
 	c.JSON(http.StatusOK, bookDetails)
-
 }
 
 func CreateBook(c *gin.Context) {
@@ -41,7 +40,7 @@ func CreateBook(c *gin.Context) {
 
 func DeleteBook(c *gin.Context) {
 	bookId := c.Param("bookId")
-	ID, err := strconv.ParseInt(bookId, 0, 0)
+	ID, err := strconv.ParseInt(bookId, 10, 64)
 	if err != nil {
 		fmt.Println("error while parsing")
 	}
@@ -53,7 +52,7 @@ func UpdateBook(c *gin.Context) {
 	var updateBook = &models.Book{}
 	utils.ParseBody(c, UpdateBook)
 	bookId := c.Param("bookId")
-	ID, err := strconv.ParseInt(bookId, 0, 0)
+	ID, err := strconv.ParseInt(bookId, 10, 64)
 	if err != nil {
 		fmt.Println("error while parsing")
 	}
